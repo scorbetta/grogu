@@ -1,7 +1,0 @@
-[regblock]
-
-# Custom CPU interface
-cpuifs.gAXI4LiteInterface = "gExporters:gAXI4LiteInterface"
-
-# Active-low synchronous reset
-default_reset = "rst_n"

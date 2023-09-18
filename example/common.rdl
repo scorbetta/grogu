@@ -7,21 +7,18 @@
 // Define a named status register
 `define DEF_SREG(name) \
     reg SREG_``name { \
-        default desc = "A named status register"; \
         default hw = rw; \
         default sw = r;
 
 // Define a named control register
 `define DEF_CREG(name) \
     reg CREG_``name { \
-        default desc = "A named control register"; \
         default hw = r; \
         default sw = rw;
 
 // Define a named delta register
 `define DEF_DREG(name) \
     reg DREG_``name { \
-        default desc = "A named status register"; \
         default hw = rw; \
         default sw = r;
 
