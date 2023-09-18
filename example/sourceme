@@ -7,4 +7,28 @@ eval ${grogu_cmd}
 csr_file=grogu.gen/REGPOOL/csr.tree
 echo ""
 echo "show: Contents of ${csr_file}"
-cat ${csr_file}
+cat ${csr_file}s
+
+# Run simulation using Xilinx tools
+echo ""
+echo "exec: Xilinx simulation"
+
+# Compile
+xvlog --nolog --incr --sv --include grogu.gen/REGPOOL/rtl \
+    grogu.gen/REGPOOL/rtl/regpool_pkg.sv \
+    ../bundle/AXI4.sv \
+    ../bundle/AXIL2NATIVE.sv \
+    ../bundle/DELTA_REG.sv \
+    ../bundle/RO_REG.sv \
+    ../bundle/RW_REG.sv \
+    grogu.gen/REGPOOL/rtl/REGPOOL.sv \
+    ootbtb.sv
+
+# Elaborate
+xelab --nolog --debug all --timescale 1ns/100ps --snapshot xsim.snapshot ootbtb
+
+# Simulate
+xsim --nolog --tclbatch xsim.in xsim.snapshot
+
+# View
+xsim -g xsim.snapshot.wdb

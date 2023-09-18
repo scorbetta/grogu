@@ -17,18 +17,18 @@ module {{module_name}} (
 );
 
     logic regpool_ren;
-    logic [15:0] regpool_raddr;
+    logic [31:0] regpool_raddr;
     logic [31:0] regpool_rdata;
     logic regpool_rvalid;
     logic regpool_wen;
     logic regpool_wen_resampled;
-    logic [15:0] regpool_waddr;
+    logic [31:0] regpool_waddr;
     logic [31:0] regpool_wdata;
 
     // AXI4 Lite to Native bridge
     AXIL2NATIVE #(
         .DATA_WIDTH (32),
-        .ADDR_WIDTH (16)
+        .ADDR_WIDTH (32)
     )
     AXIL2NATIVE_0 (
         .AXI_ACLK       (ACLK),
@@ -79,23 +79,27 @@ module {{module_name}} (
     logic {{ns.temp1.lower()}}_wreq_filtered;
     logic [31:0] {{ns.temp1.lower()}}_value_out;
     RW_REG #(
-        .DATA_WIDTH (32)
+        .DATA_WIDTH (32),
+        .HAS_RESET  (1)
     )
     {{ns.temp1}}_REG (
-        .CLK    (ACLK),
-        .WEN    ({{ns.temp1.lower()}}_wreq_filtered),
-        .WDATA  (regpool_wdata),
-        .RDATA  ({{ns.temp1.lower()}}_value_out)
+        .CLK        (ACLK),
+        .RSTN       (ARESETN),
+        .WEN        ({{ns.temp1.lower()}}_wreq_filtered),
+        .VALUE_IN   (regpool_wdata),
+        .VALUE_OUT  ({{ns.temp1.lower()}}_value_out)
     );
         {% else %}
     // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
     logic [31:0] {{ns.temp1.lower()}}_value_in;
     logic [31:0] {{ns.temp1.lower()}}_value_out;
     RO_REG #(
-        .DATA_WIDTH (32)
+        .DATA_WIDTH (32),
+        .HAS_RESET  (1)
     )
     {{ns.temp1}}_REG (
         .CLK        (ACLK),
+        .RSTN       (ARESETN),
         .VALUE_IN   ({{ns.temp1.lower()}}_value_in),
         .VALUE_OUT  ({{ns.temp1.lower()}}_value_out)
     );

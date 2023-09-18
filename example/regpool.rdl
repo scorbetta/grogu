@@ -13,7 +13,7 @@ addrmap regpool {
     // Instantiate status registers
     `REF_SGPREG(GP, TIMESTAMP_HIGHER, "Absolute timestamp, higher half bits [63:32]")
     `REF_SGPREG(GP, TIMESTAMP_LOWER, "Absolute timestamp, lower half bits [31:0]")
-    `REF_CGPREG(GP, FIRMWARE_BUILD, "Firmware build SHA, lower 4 Bytes")
+    `REF_SGPREG(GP, FIRMWARE_BUILD, "Firmware build SHA, lower 4 Bytes")
     `REF_SREG(STATS, ACCESS_STATISTICS)
 
     // Instantiate control registers
