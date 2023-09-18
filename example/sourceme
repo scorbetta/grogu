@@ -1,0 +1,10 @@
+# Run grogu
+grogu_cmd="../src/grogu.py --rdl regpool.rdl"
+echo "exec: ${grogu_cmd}"
+eval ${grogu_cmd}
+
+# Show tree
+csr_file=grogu.gen/REGPOOL/csr.tree
+echo ""
+echo "show: Contents of ${csr_file}"
+cat ${csr_file}

@@ -1,0 +1,34 @@
+// Multi-field registers definition
+
+// Multi-field status registers
+`DEF_SREG(STATS)
+    desc = "Access statistics";
+
+    field {
+        desc = "Number of Write accesses";
+    } num_writes [16];
+
+    field {
+        desc = "Number of Read accesses";
+    } num_reads [16];
+};
+
+// Multi-field control registers
+`DEF_CREG(CORE_CTRL)
+    desc = "Core-level configuration";
+
+    field {
+        desc = "Enable Write access statistics counter";
+    } write_access_count_en [1] = 1'b0;
+
+    field {
+        desc = "Enable Read access statistics counter";
+    } read_access_count_en [1] = 1'b0;
+
+    field {
+        desc = "Unused";
+    } reserved [30] = 30'd0;
+};
+
+// Multi-field delta registers
+

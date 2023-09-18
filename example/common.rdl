@@ -1,0 +1,62 @@
+// A collection of reusable RDL entities for the CSR pool generation
+
+// Status registers are Read-only (from a Software view-point), and they are prefixed with an 'S'.
+// Control registers are Read-Write, and they are prefixed with a 'C'. Delta registers are one
+// particular case of a status register, and they are prefixed with a 'D'.
+
+// Define a named status register
+`define DEF_SREG(name) \
+    reg SREG_``name { \
+        default desc = "A named status register"; \
+        default hw = rw; \
+        default sw = r;
+
+// Define a named control register
+`define DEF_CREG(name) \
+    reg CREG_``name { \
+        default desc = "A named control register"; \
+        default hw = r; \
+        default sw = rw;
+
+// Define a named delta register
+`define DEF_DREG(name) \
+    reg DREG_``name { \
+        default desc = "A named status register"; \
+        default hw = rw; \
+        default sw = r;
+
+// Single-field registers are common, and they often share layout with registers with flattened
+// fields (i.e., legacy registers or registers designed with no fields in mind). These are
+// general-purpose registers, whose properties shall be updated after register creation using
+// pointer-like syntax
+`DEF_SREG(GP)
+    desc = "General purpose status register";
+    field { } data [32] = 0;
+};
+
+`DEF_CREG(GP)
+    desc = "General purpose control register";
+    field { } data [32] = 0;
+};
+
+`DEF_DREG(GP)
+    desc = "General purpose delta register";
+    field { } data [32] = 0;
+};
+
+// Utilities to instantiate register with consistent naming
+`define REF_SREG(reg_name, instance_name) SREG_``reg_name instance_name;
+`define REF_CREG(reg_name, instance_name) CREG_``reg_name instance_name;
+`define REF_DREG(reg_name, instance_name) DREG_``reg_name instance_name;
+
+`define REF_SGPREG(reg_name, instance_name, desc_str) \
+    SREG_``reg_name instance_name; \
+    instance_name->desc = desc_str;
+
+`define REF_CGPREG(reg_name, instance_name, desc_str) \
+    CREG_``reg_name instance_name; \
+    instance_name->desc = desc_str;
+
+`define REF_DGPREG(reg_name, instance_name, desc_str) \
+    DREG_``reg_name instance_name; \
+    instance_name->desc = desc_str;
