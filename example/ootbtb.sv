@@ -68,6 +68,8 @@ module ootbtb;
 
     // Stimuli
     initial begin
+        regpool_bundle_in.DELTA_TEST.irq.next <= 1'b0;
+        regpool_bundle_in.DELTA_TEST.rsv.next <= 31'd0;
         axil.set_idle();
         @(posedge aresetn);
         repeat(10) @(posedge aclk);
@@ -101,6 +103,13 @@ module ootbtb;
         axil.write_data(`CORE_CONFIGURATION_OFFSET, axi_writein);
         repeat(10) @(posedge aclk);
         axil.read_data(`CORE_CONFIGURATION_OFFSET, axi_readout);
+        repeat(10) @(posedge aclk);
+
+        // Test delta register
+        @(posedge aclk);
+        regpool_bundle_in.DELTA_TEST.irq.next <= 1'b1;
+        repeat(20) @(posedge aclk);
+        axil.read_data(`DELTA_TEST_OFFSET, axi_readout);
 
         repeat(1e2) @(posedge aclk);
         $finish;

@@ -63,8 +63,8 @@ module {{module_name}} (
     );
 
     // Instantiate registers and declare their own signals. From a Software perspective, i.e. access
-    // via the AXI4 Lite interface, Configuration registers are Write-only and Debug registers are
-    // Read-only
+    // via the AXI4 Lite interface, Configuration registers are Write-only while Status and Delta
+    // registers are Read-only
 {%- for reg in regs %}
     {%- for reg_inst in reg.unrolled() %}
         {%- if reg.is_array %}
@@ -89,7 +89,30 @@ module {{module_name}} (
         .VALUE_IN   (regpool_wdata),
         .VALUE_OUT  ({{ns.temp1.lower()}}_value_out)
     );
-        {% else %}
+        {% elif reg_inst.is_interrupt_reg %}
+    // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
+    logic [31:0] {{ns.temp1.lower()}}_value_in;
+    logic [31:0] {{ns.temp1.lower()}}_value_out;
+    logic {{ns.temp1.lower()}}_value_change;
+    logic {{ns.temp1.lower()}}_read_event;
+    DELTA_REG #(
+        .DATA_WIDTH (32),
+        .HAS_RESET  (1)
+    )
+    {{ns.temp1}}_REG (
+        .CLK            (ACLK),
+        .RSTN           (ARESETN),
+        .READ_EVENT     ({{ns.temp1.lower()}}_read_event),
+        .VALUE_IN       ({{ns.temp1.lower()}}_value_in),
+        .VALUE_CHANGE   ({{ns.temp1.lower()}}_value_change),
+        .VALUE_OUT      ({{ns.temp1.lower()}}_value_out)
+    );
+        {% if reg.is_array %}
+    assign {{ns.temp1.lower()}}_read_event = regpool_rvalid & (regpool_raddr == `{{reg_inst.inst_name}}_{{reg_inst.current_idx[0]}}_OFFSET);
+        {%- else %}
+    assign {{ns.temp1.lower()}}_read_event = regpool_rvalid & (regpool_raddr == `{{reg_inst.inst_name}}_OFFSET);
+        {%- endif %}
+    {% else %}
     // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
     logic [31:0] {{ns.temp1.lower()}}_value_in;
     logic [31:0] {{ns.temp1.lower()}}_value_out;
@@ -175,7 +198,7 @@ module {{module_name}} (
             default : begin regpool_rdata <= 32'hdeadbeef; end
         endcase
     end
- 
+
     // Compose and decompose CSR structured data. Control registers (those written by the Software
     // and read by the Hardware) are put over the  hwif_out  port; Status registers (those written
     // by the Hardware and read by the Software) are get over the  hwif_in  port
@@ -193,6 +216,10 @@ module {{module_name}} (
     assign { {%- for field in reg_inst.fields()|reverse %} hwif_out.{{ns.temp1}}.{{field.inst_name}}.value{%- if not loop.last %},{%- endif -%} {%- endfor %} } = {{ns.temp2.lower()}}_value_out;
         {%- else %}
     assign {{ns.temp2.lower()}}_value_in = { {%- for field in reg_inst.fields()|reverse %} hwif_in.{{ns.temp1}}.{{field.inst_name}}.next{%- if not loop.last %},{%- endif -%} {%- endfor %} };
+        {%- endif %}
+
+        {%- if reg_inst.is_interrupt_reg %}
+    assign hwif_out.{{ns.temp1}}.intr = {{ns.temp2.lower()}}_value_change;
         {%- endif %}
     {%- endfor %}
 {%- endfor %}

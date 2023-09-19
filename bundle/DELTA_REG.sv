@@ -18,6 +18,7 @@ module DELTA_REG #(
     logic [DATA_WIDTH-1:0]  value_diff;
     logic                   delta_event;
     logic                   value_change;
+    logic [DATA_WIDTH-1:0]  reg_value;
 
     // Read-only register
     RO_REG #(
@@ -27,14 +28,13 @@ module DELTA_REG #(
     REG (
         .CLK        (CLK),
         .RSTN       (RSTN),
-        .WEN        (1'b1),
         .VALUE_IN   (VALUE_IN),
         .VALUE_OUT  (reg_value)
     );
 
     // Compute value difference efficiently
-    assign value_diff   = VALUE_IN & reg_value;
-    assign delta_event  = &value_diff;
+    assign value_diff   = VALUE_IN ^ reg_value;
+    assign delta_event  = |value_diff;
 
     // Latch the delta event until next  READ_EVENT  is seen
     always_ff @(posedge CLK) begin

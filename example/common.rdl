@@ -20,7 +20,8 @@
 `define DEF_DREG(name) \
     reg DREG_``name { \
         default hw = rw; \
-        default sw = r;
+        default sw = r; \
+        default intr = true;
 
 // Single-field registers are common, and they often share layout with registers with flattened
 // fields (i.e., legacy registers or registers designed with no fields in mind). These are

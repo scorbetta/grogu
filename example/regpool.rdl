@@ -20,4 +20,5 @@ addrmap regpool {
     `REF_CREG(CORE_CTRL, CORE_CONFIGURATION)
 
     // Instantiate delta registers
+    `REF_DREG(DELTA, DELTA_TEST)
 };

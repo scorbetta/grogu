@@ -31,4 +31,14 @@
 };
 
 // Multi-field delta registers
+`DEF_DREG(DELTA)
+    desc = "Delta register test";
 
+    field {
+        desc = "Interrupt line";
+    } irq [1];
+
+    field {
+        desc = "Unused";
+    } rsv [31];
+};

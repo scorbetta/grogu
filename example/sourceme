@@ -7,7 +7,7 @@ eval ${grogu_cmd}
 csr_file=grogu.gen/REGPOOL/csr.tree
 echo ""
 echo "show: Contents of ${csr_file}"
-cat ${csr_file}s
+cat ${csr_file}
 
 # Run simulation using Xilinx tools
 echo ""
