@@ -74,6 +74,12 @@ module ootbtb;
         @(posedge aresetn);
         repeat(10) @(posedge aclk);
 
+        // Read value from registers declared as array of registers
+        for(int rdx = 0; rdx < 4; rdx++) begin
+            axil.read_data(`DEBUG_REG_0_OFFSET + (rdx * 4), axi_readout);
+            repeat(10) @(posedge aclk);
+        end
+
         // Read value from status register
         axil.read_data(`TIMESTAMP_HIGHER_OFFSET, axi_readout);
         repeat(10) @(posedge aclk);

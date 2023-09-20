@@ -58,3 +58,20 @@
 `define REF_DGPREG(reg_name, instance_name, desc_str) \
     DREG_``reg_name instance_name; \
     instance_name->desc = desc_str;
+
+// Utilities to instantiate array of registers
+`define REF_MULTI_SREG(reg_name, instance_name, num_instances) SREG_``reg_name instance_name [num_instances];
+`define REF_MULTI_CREG(reg_name, instance_name, num_instances) CREG_``reg_name instance_name [num_instances];
+`define REF_MULTI_DREG(reg_name, instance_name, num_instances) DREG_``reg_name instance_name [num_instances];
+
+`define REF_MULTI_SGPREG(reg_name, instance_name, desc_str, num_instances) \
+    SREG_``reg_name instance_name [num_instances]; \
+    instance_name->desc = desc_str;
+
+`define REF_MULTI_CGPREG(reg_name, instance_name, desc_str, num_instances) \
+    CREG_``reg_name instance_name [num_instances]; \
+    instance_name->desc = desc_str;
+
+`define REF_MULTI_DGPREG(reg_name, instance_name, desc_str, num_instances) \
+    DREG_``reg_name instance_name [num_instances]; \
+    instance_name->desc = desc_str;

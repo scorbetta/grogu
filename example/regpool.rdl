@@ -10,6 +10,9 @@ addrmap regpool {
     default regwidth = 32;
     default shared = true;
 
+    // Instantiate array of GP registers
+    `REF_MULTI_SGPREG(GP, DEBUG_REG, "Debug register", 4)
+
     // Instantiate status registers
     `REF_SGPREG(GP, TIMESTAMP_HIGHER, "Absolute timestamp, higher half bits [63:32]")
     `REF_SGPREG(GP, TIMESTAMP_LOWER, "Absolute timestamp, lower half bits [31:0]")

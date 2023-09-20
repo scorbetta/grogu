@@ -7,8 +7,9 @@
 `include "{{module_name}}.svh"
 
 module {{module_name}} (
-    // Clock and reset
+    // Clock
     input ACLK,
+    // Active-low synchronous reset
     input ARESETN,
     // AXI interface
     axi4l_if.slave AXIL,
@@ -65,7 +66,7 @@ module {{module_name}} (
     // Instantiate registers and declare their own signals. From a Software perspective, i.e. access
     // via the AXI4 Lite interface, Configuration registers are Write-only while Status and Delta
     // registers are Read-only
-{%- for reg in regs %}
+{% for reg in regs %}
     {%- for reg_inst in reg.unrolled() %}
         {%- if reg.is_array %}
         {%- set ns.temp1 = reg_inst.inst_name ~ "_" ~ reg_inst.current_idx[0] %}

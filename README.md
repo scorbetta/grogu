@@ -3,9 +3,11 @@
 RDL description file.
 
 It simplifies the adoption of the RDL formalism in a digital design flow. It revolves around the
-`SystemRDL` compiler and `PeakRDL` command line tool. `grogu` is designed with simplicity in mind.
-For this reason, it does not in any way use all the features of `PeakRDL`. It is not meant as a
-replacement of `PeakRDL`. It is just a simplified use-case. Y'all be warned!
+`SystemRDL` compiler and `PeakRDL` command line tool.
+
+`grogu` is designed with simplicity in mind.  For this reason, it does not in any way use all the
+features of `PeakRDL`, nor all the specs from `SystemRDL`. It is not meant as a replacement of
+`PeakRDL`. It is just a simplified use-case. Y'all be warned!
 
 With `grogu` you will:
 - Generate synthesizable SystemVerilog code of a register map;
@@ -13,15 +15,15 @@ With `grogu` you will:
 - Generate C header files for Software development.
 
 ## Assumptions
-The released version of `grogu` works well in the following cases. Any deviation from these
+The release version of `grogu` works well in the following cases. Any deviation from these
 assumptions must be explicitely supported; this is in charge of the user.
 
 - Target language is SytemVerilog;
-- The register map interface is AXI4 Lite with configurable address and data width;
+- The register map interface is AXI4 Lite with 32-bit data and 32-bit addresses;
 - The interface supports one single access at a time, either Write or Read;
-- There are 3 (three) types of registers: Read/Write registers (i.e., can be written and read by the
-  Software), Read-only register (i.e., Software can read only) and Delta registers (a particular
-case of Read-only registers).
+- There are 3 (three) types of registers: Read/Write registers can be written and read by the
+  Software, Read-only register can only be read by the Software and Delta registers are Read-only
+registers with an additional level interrupt line.
 
 ## Bundle
 `grogu` comes bundled with pre-verified design support files:
@@ -40,6 +42,10 @@ registers:
 
 |NAME|TYPE|CONTENTS|
 |-|-|-|
+|DEBUG_REG_0|Status|Debug register 1/4|
+|DEBUG_REG_1|Status|Debug register 2/4|
+|DEBUG_REG_2|Status|Debug register 3/4|
+|DEBUG_REG_3|Status|Debug register 4/4|
 |TIMESTAMP_HIGHER|Status|Absolute timestamp, higher half bits [63:32]|
 |TIMESTAMP_LOWER|Status|Absolute timestamp, lower half bits [31:0]|
 |FIRMWARE_BUILD|Status|Firmware build SHA, lower 4 Bytes|
@@ -73,37 +79,37 @@ Proceed with the following steps to test the example provided.
 
 Create a virtual environment with Python, and activate it:
 
-```bash
+```
 $> python3 -m venv venv
 $> source venv/bin/activate
 ```
 
 Surf to the cloned repository and install Python dependencies:
 
-```bash
+```
 $> cd grogu
 $> pip install -r requirements.txt
 ```
 
 Surf to the `example/` folder. If you have Xilinx Vivado installed, just launch the tool. If you
-have other SystemVerilog compilers/simulators modify the script accordingly. And if you don't want
-any simulation at all just comment the script past line 12. Then launch the tool:
+have other SystemVerilog compilers/simulators modify the `sourceme` script accordingly. And if you
+don't want any simulation at all just comment the script past line 12. Then launch the tool:
 
-```bash
+```
 $> source sourceme
 ```
 
-Generated files will be stored in `grogu.gen`. Output consists of:
+Generated files will be stored beneath `grogu.gen/`. Output consists of:
 
 |FILE|CONTENTS|
 |-|-|
 |`REGPOOL/csr.tree`|A tree representation of the register in the register map|
-|`html/index.html`|Entry point of the HTML documentation|
-|`rtl/regpool_pkg.sv`|The SystemVerilog structured definition of the registers|
-|`rtl/REGPOOL.sv`|The register pool top-level module|
-|`rtl/REGPOOL.svh`|Register offsets macros|
-|`sw/regpool_reg_defines.h`|C structured definition of the registers|
-|`sw/regpool_reg_offsets.h`|C macros of the register offsets|
+|`REGPOOL/html/index.html`|Entry point of the HTML documentation|
+|`REGPOOL/rtl/regpool_pkg.sv`|The SystemVerilog structured definition of the registers|
+|`REGPOOL/rtl/REGPOOL.sv`|The register pool top-level module|
+|`REGPOOL/rtl/REGPOOL.svh`|Register offsets macros|
+|`REGPOOL/sw/regpool_reg_defines.h`|C structured definition of the registers|
+|`REGPOOL/sw/regpool_reg_offsets.h`|C macros of the register offsets|
 
 The structured definitions in the SystemVerilog and C headers allow the user to access register
 fields using the dot notation, withtout any need to compute the position of the field within a
