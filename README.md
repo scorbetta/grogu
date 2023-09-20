@@ -1,4 +1,3 @@
-# grogu
 `grogu` is (yet another) convenient tool to generate synthesizable register maps starting from an
 RDL description file.
 
@@ -10,6 +9,7 @@ features of `PeakRDL`, nor all the specs from `SystemRDL`. It is not meant as a 
 `PeakRDL`. It is just a simplified use-case. Y'all be warned!
 
 With `grogu` you will:
+
 - Generate synthesizable SystemVerilog code of a register map;
 - Generate HTML-based documentation;
 - Generate C header files for Software development.
@@ -36,7 +36,7 @@ registers with an additional level interrupt line.
 - A full example with testbench (`example/*`);
 - A set of JINJA templates that can be modified at ease or used as is (`templates/*`).
 
-# Example
+## Example
 The `example/` folder contains an example of a register map consisting of the following 32-bit
 registers:
 
