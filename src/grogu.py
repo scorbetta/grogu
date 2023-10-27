@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Standard includes
 import sys
@@ -59,11 +59,11 @@ def main(rdl_file, tfolder, module_template, package_template, rtl_offset_templa
     groguXrtl.export(root, f'{ofolder}/rtl', cpuif_cls=gAXI4LiteInterface, module_template=module_template, package_template=package_template, module_name=module_name, package_name=rtl_package_name)
 
     # Generate output products 2: Export SystemVerilog headers
-    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, '../templates', rtl_offset_template)
+    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, tfolder, rtl_offset_template)
 
     # Generate output products 3: Export Software files
     os.mkdir(f'{ofolder}/sw')
-    gSoftwareHeaderExporter(root, f'{ofolder}/sw', sw_package_name, '../templates', sw_offset_template, sw_defines_template, prefix)
+    gSoftwareHeaderExporter(root, f'{ofolder}/sw', sw_package_name, tfolder, sw_offset_template, sw_defines_template, prefix)
 
     # Generate output products 4: Export HTML
     os.mkdir(f'{ofolder}/html')
