@@ -101,6 +101,79 @@ interface axi4l_if
         input  rready
     );
 
+`ifdef DISABLE_TASKS
+`else
+    // Generic wait for event macro
+    `define WAIT_CONDITION(a) \
+        forever begin \
+            @(posedge aclk); \
+            if(a) break; \
+        end
+
+    // Start a simple Slave that continuously accepts incoming requests and generates responses. Up
+    // to 16 written values are remembered and sent back during Read accesses, useful for simple
+    // Write/Read tests
+    task start_slave();
+        // Local cache
+        logic [DATA_WIDTH-1:0] cache [16];
+
+        // Wait out of reset
+        @(posedge aresetn);
+
+        forever begin
+            fork
+                // Write address channel
+                begin
+                    awready <= 1'b0;
+                    `WAIT_CONDITION(awvalid);
+                    awready <= 1'b1;
+                    @(posedge aclk);
+                    awready <= 1'b0;
+                end
+
+                // Write data channel
+                begin
+                    wready <= 1'b0;
+                    `WAIT_CONDITION(wvalid);
+                    wready <= 1'b1;
+                    cache[awaddr[3:0]] <= wdata;
+                    @(posedge aclk);
+                    wready <= 1'b0;
+                end
+
+                // Write response channel
+                begin
+                    bvalid <= 1'b0;
+                    bresp <= 2'b00;
+                    `WAIT_CONDITION(wvalid && wready);
+                    bvalid <= 1'b1;
+                    `WAIT_CONDITION(bvalid && bready);
+                    bvalid <= 1'b0;
+                end
+
+                // Read address channel
+                begin
+                    arready <= 1'b0;
+                    `WAIT_CONDITION(arvalid);
+                    arready <= 1'b1;
+                    @(posedge aclk);
+                    arready <= 1'b0;
+                end
+
+                // Read data and response channel
+                begin
+                    rvalid <= 1'b0;
+                    rresp <= 2'b00;
+                    `WAIT_CONDITION(arvalid && arready);
+                    rvalid <= 1'b1;
+                    rdata <= cache[araddr[3:0]];
+                    `WAIT_CONDITION(rvalid && rready);
+                    rvalid <= 1'b0;
+                end
+            join
+        end
+    endtask
+
     // Zero out all control signals
     task set_idle();
         @(posedge aclk);
@@ -201,4 +274,5 @@ interface axi4l_if
         // Shim delay
         @(posedge aclk);
     endtask
+`endif /* DISABLE_TASKS */
 endinterface
