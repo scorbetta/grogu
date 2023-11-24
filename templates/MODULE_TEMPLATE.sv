@@ -18,18 +18,18 @@ module {{module_name}} (
 );
 
     logic regpool_ren;
-    logic [31:0] regpool_raddr;
-    logic [31:0] regpool_rdata;
+    logic [{{addr_width-1}}:0] regpool_raddr;
+    logic [{{data_width-1}}:0] regpool_rdata;
     logic regpool_rvalid;
     logic regpool_wen;
     logic regpool_wen_resampled;
-    logic [31:0] regpool_waddr;
-    logic [31:0] regpool_wdata;
+    logic [{{addr_width-1}}:0] regpool_waddr;
+    logic [{{data_width-1}}:0] regpool_wdata;
 
     // AXI4 Lite to Native bridge
     AXIL2NATIVE #(
-        .DATA_WIDTH (32),
-        .ADDR_WIDTH (32)
+        .DATA_WIDTH ({{data_width}}),
+        .ADDR_WIDTH ({{addr_width}})
     )
     AXIL2NATIVE_0 (
         .AXI_ACLK       (ACLK),
@@ -78,9 +78,9 @@ module {{module_name}} (
     // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
     logic {{ns.temp1.lower()}}_wreq;
     logic {{ns.temp1.lower()}}_wreq_filtered;
-    logic [31:0] {{ns.temp1.lower()}}_value_out;
+    logic [{{reg_inst.size * 8 - 1}}:0] {{ns.temp1.lower()}}_value_out;
     RW_REG #(
-        .DATA_WIDTH (32),
+        .DATA_WIDTH ({{reg_inst.size * 8}}),
         .HAS_RESET  (1)
     )
     {{ns.temp1}}_REG (
@@ -92,12 +92,12 @@ module {{module_name}} (
     );
         {% elif reg_inst.is_interrupt_reg %}
     // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
-    logic [31:0] {{ns.temp1.lower()}}_value_in;
-    logic [31:0] {{ns.temp1.lower()}}_value_out;
+    logic [{{reg_inst.size * 8 - 1}}:0] {{ns.temp1.lower()}}_value_in;
+    logic [{{reg_inst.size * 8 - 1}}:0] {{ns.temp1.lower()}}_value_out;
     logic {{ns.temp1.lower()}}_value_change;
     logic {{ns.temp1.lower()}}_read_event;
     DELTA_REG #(
-        .DATA_WIDTH (32),
+        .DATA_WIDTH ({{reg_inst.size * 8}}),
         .HAS_RESET  (1)
     )
     {{ns.temp1}}_REG (
@@ -115,10 +115,10 @@ module {{module_name}} (
         {%- endif %}
     {% else %}
     // {{ns.temp1}}: {{reg_inst.get_property("desc")}}
-    logic [31:0] {{ns.temp1.lower()}}_value_in;
-    logic [31:0] {{ns.temp1.lower()}}_value_out;
+    logic [{{reg_inst.size * 8 - 1 }}:0] {{ns.temp1.lower()}}_value_in;
+    logic [{{reg_inst.size * 8 - 1 }}:0] {{ns.temp1.lower()}}_value_out;
     RO_REG #(
-        .DATA_WIDTH (32),
+        .DATA_WIDTH ({{reg_inst.size * 8}}),
         .HAS_RESET  (1)
     )
     {{ns.temp1}}_REG (

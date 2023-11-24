@@ -46,11 +46,9 @@ module AXIL2NATIVE #(
     state_t                 curr_state;
     logic                   axi_awready;
     logic                   axi_wready;
-    logic [1:0]             axi_bresp;
     logic                   axi_bvalid;
     logic                   axi_arready;
     logic [DATA_WIDTH-1:0]  axi_rdata;
-    logic [1:0]             axi_rresp;
     logic                   axi_rvalid;
     logic                   wen;
     logic [ADDR_WIDTH-1:0]  waddr;
@@ -103,7 +101,6 @@ module AXIL2NATIVE #(
                     end
                     else if(AXI_WVALID == 1'b1 && axi_wready == 1'b1) begin
                         axi_bvalid <= 1'b1;
-                        axi_bresp <= 2'b00;
                         curr_state <= WRITE_RESP;
                     end
                     else begin
@@ -123,7 +120,6 @@ module AXIL2NATIVE #(
                     if(RVALID == 1'b1 && axi_rvalid == 1'b0) begin
                         axi_rvalid <= 1'b1;
                         axi_rdata <= RDATA;
-                        axi_rresp <= 2'b00;
                     end
                     else if(axi_rvalid == 1'b1 && AXI_RREADY == 1'b1) begin
                         axi_rvalid <= 1'b0;
@@ -137,11 +133,11 @@ module AXIL2NATIVE #(
     // Pinout assignments
     assign AXI_AWREADY  = axi_awready;
     assign AXI_WREADY   = axi_wready;
-    assign AXI_BRESP    = axi_bresp;
+    assign AXI_BRESP    = 2'b00;
     assign AXI_BVALID   = axi_bvalid;
     assign AXI_ARREADY  = axi_arready;
     assign AXI_RDATA    = axi_rdata;
-    assign AXI_RRESP    = axi_rresp;
+    assign AXI_RRESP    = 2'b00;
     assign AXI_RVALID   = axi_rvalid;
     assign WEN          = wen;
     assign WADDR        = waddr;

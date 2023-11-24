@@ -191,7 +191,12 @@ class gRTLExporter(RegblockExporter):
             "hwif": self.hwif,
             "field_logic": self.field_logic,
             "readback": self.readback,
-            "package_name" : self.ds.package_name
+            "package_name" : self.ds.package_name,
+            # Take register width from first register since most of the cases all registers have the
+            # same width...
+            "data_width": all_regs[0].size * 8,
+            # By default, let the synthesized trim what's not necessary
+            "addr_width": 32
         }
 
         # Write out design

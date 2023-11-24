@@ -29,17 +29,17 @@
 // pointer-like syntax
 `DEF_SREG(GP)
     desc = "General purpose status register";
-    field { } data [32] = 0;
+    field { } data;
 };
 
 `DEF_CREG(GP)
     desc = "General purpose control register";
-    field { } data [32] = 0;
+    field { } data;
 };
 
 `DEF_DREG(GP)
     desc = "General purpose delta register";
-    field { } data [32] = 0;
+    field { } data;
 };
 
 // Utilities to instantiate register with consistent naming
