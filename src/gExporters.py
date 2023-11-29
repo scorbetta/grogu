@@ -171,6 +171,7 @@ class gRTLExporter(RegblockExporter):
         cpuif_cls = kwargs.pop("cpuif_cls", None) or AXI4Lite_Cpuif # type: Type[CpuifBase]
         module_template = kwargs.pop("module_template", None) # type: str
         package_template = kwargs.pop("package_template", None) # type: str
+        target_language = kwargs.pop("target_language", None) # type: str
 
         # Construct exporter components
         self.cpuif = cpuif_cls(self)
@@ -199,21 +200,25 @@ class gRTLExporter(RegblockExporter):
             "addr_width": 32
         }
 
-        # Write out design
-        context['template_file'] = package_template
-        package_file_path = os.path.join(odir, self.ds.package_name + ".sv")
-        template = self.jj_env.get_template(package_template)
-        stream = template.stream(context)
-        stream.dump(package_file_path)
+        # Package is created only when SystemVerilog is required
+        if target_language == "SystemVerilog":
+            extension = "sv"
+            context['template_file'] = package_template
+            package_file_path = os.path.join(odir, self.ds.package_name + "." + extension)
+            template = self.jj_env.get_template(package_template)
+            stream = template.stream(context)
+            stream.dump(package_file_path)
+        else:
+            extension = "v"
 
         context['template_file'] = module_template
-        module_file_path = os.path.join(odir, self.ds.module_name + ".sv")
+        module_file_path = os.path.join(odir, self.ds.module_name + "." + extension)
         template = self.jj_env.get_template(module_template)
         stream = template.stream(context)
         stream.dump(module_file_path)
 
 # Utility to export RTL defines
-def gRTLHeaderExporter(root, ofolder, basename, tfolder, template):
+def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_language):
     jinja_env = Environment(loader=FileSystemLoader(tfolder))
     jinja_env.add_extension('jinja2.ext.loopcontrols')
     template = jinja_env.get_template(template)
@@ -225,7 +230,14 @@ def gRTLHeaderExporter(root, ofolder, basename, tfolder, template):
         "module_name": basename.upper(),
         "template_file": template.name
     }
-    ofile_name = f'{ofolder}/{basename.upper()}.svh'
+
+    extension = ""
+    if target_language == "SystemVerilog":
+        extension = "svh"
+    else:
+        extension = "vh"
+
+    ofile_name = f'{ofolder}/{basename.upper()}.{extension}'
     jinja_render = template.render(context)
     with open(ofile_name, mode="w", encoding="utf-8") as fid:
         fid.write(jinja_render)
