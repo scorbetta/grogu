@@ -113,7 +113,7 @@ module {{module_name}} (
     wire [{{reg_inst.size * 8 - 1}}:0] {{ns.temp1.lower()}}_value_out;
     RW_REG #(
         .DATA_WIDTH ({{reg_inst.size * 8}}),
-        .HAS_RESET  (1)
+        .HAS_RESET  ({{reg_inst.get_property('resetreg')}})
     )
     {{ns.temp1}}_REG (
         .CLK        (ACLK),
@@ -130,7 +130,7 @@ module {{module_name}} (
     wire {{ns.temp1.lower()}}_read_event;
     DELTA_REG #(
         .DATA_WIDTH ({{reg_inst.size * 8}}),
-        .HAS_RESET  (1)
+        .HAS_RESET  ({{reg_inst.get_property('resetreg')}})
     )
     {{ns.temp1}}_REG (
         .CLK            (ACLK),
@@ -151,7 +151,7 @@ module {{module_name}} (
     wire [{{reg_inst.size * 8 - 1 }}:0] {{ns.temp1.lower()}}_value_out;
     RO_REG #(
         .DATA_WIDTH ({{reg_inst.size * 8}}),
-        .HAS_RESET  (1)
+        .HAS_RESET  ({{reg_inst.get_property('resetreg')}})
     )
     {{ns.temp1}}_REG (
         .CLK        (ACLK),
