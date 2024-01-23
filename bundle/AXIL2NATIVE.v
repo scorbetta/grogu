@@ -41,9 +41,6 @@ module AXIL2NATIVE #(
     input wire                      RVALID
 );
 
-    // clog2
-    `include "clog2.vh"
-
     // States encoding
     localparam READ         = 0;
     localparam WRITE_RESP   = 1;
@@ -51,7 +48,7 @@ module AXIL2NATIVE #(
     localparam IDLE         = 3;
 
     // Internal connections
-    reg [clog2(IDLE)-1:0]   curr_state;
+    reg [$clog2(IDLE)-1:0]  curr_state;
     reg                     axi_awready;
     reg                     axi_wready;
     reg                     axi_bvalid;
