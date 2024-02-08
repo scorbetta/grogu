@@ -172,6 +172,7 @@ class gRTLExporter(RegblockExporter):
         module_template = kwargs.pop("module_template", None) # type: str
         package_template = kwargs.pop("package_template", None) # type: str
         target_language = kwargs.pop("target_language", None) # type: str
+        prefix = kwargs.pop("prefix", None) # type: str
 
         # Construct exporter components
         self.cpuif = cpuif_cls(self)
@@ -197,7 +198,8 @@ class gRTLExporter(RegblockExporter):
             # same width...
             "data_width": all_regs[0].size * 8,
             # By default, let the synthesized trim what's not necessary
-            "addr_width": 32
+            "addr_width": 32,
+            "prefix": prefix.upper()
         }
 
         # Package is created only when SystemVerilog is required
@@ -218,7 +220,7 @@ class gRTLExporter(RegblockExporter):
         stream.dump(module_file_path)
 
 # Utility to export RTL defines
-def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_language):
+def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_language, prefix):
     jinja_env = Environment(loader=FileSystemLoader(tfolder))
     jinja_env.add_extension('jinja2.ext.loopcontrols')
     template = jinja_env.get_template(template)
@@ -228,7 +230,8 @@ def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_langua
     context = {
         "regs": all_regs,
         "module_name": basename.upper(),
-        "template_file": template.name
+        "template_file": template.name,
+        "prefix": prefix.upper()
     }
 
     extension = ""
@@ -268,7 +271,7 @@ def gSoftwareHeaderExporter(root, ofolder, basename, tfolder, offset_template, d
     template = jinja_env.get_template(offset_template)
     context = {
         "regs": all_regs,
-        "prefix": prefix,
+        "prefix": prefix.upper(),
         "template_file": offset_template
     }
     ofile_name = f'{ofolder}/{basename}_reg_offsets.h'

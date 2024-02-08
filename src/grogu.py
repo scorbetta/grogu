@@ -39,7 +39,7 @@ def main(rdl_file, target_language, tfolder, module_template, package_template, 
         prefix = prefix + "_"
 
     # Setup exporter
-    module_name = prefix.upper() + root.top.inst_name.upper()
+    module_name = root.top.inst_name.upper()
     ofolder = f"grogu.gen/{module_name}"
     sw_package_name = module_name.lower()
     rtl_package_name = module_name.lower() + "_pkg"
@@ -56,10 +56,10 @@ def main(rdl_file, target_language, tfolder, module_template, package_template, 
     # Generate output products 1: Export RTL
     os.mkdir(f'{ofolder}/rtl')
     groguXrtl = gRTLExporter(tfolder)
-    groguXrtl.export(root, f'{ofolder}/rtl', cpuif_cls=gAXI4LiteInterface, module_template=module_template, package_template=package_template, module_name=module_name, package_name=rtl_package_name, target_language=target_language)
+    groguXrtl.export(root, f'{ofolder}/rtl', cpuif_cls=gAXI4LiteInterface, module_template=module_template, package_template=package_template, module_name=module_name, package_name=rtl_package_name, target_language=target_language, prefix=prefix)
 
     # Generate output products 2: Export SystemVerilog headers
-    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, tfolder, rtl_offset_template, target_language)
+    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, tfolder, rtl_offset_template, target_language, prefix)
 
     # Generate output products 3: Export Software files
     os.mkdir(f'{ofolder}/sw')
@@ -80,6 +80,7 @@ if __name__ == "__main__":
     cmd_parser = argparse.ArgumentParser(prog=sys.argv[0], description='grogu is a complete Configuration and Status Register block generation tool')
     cmd_parser.add_argument('-r', '--rdl', type=str, required=True, help='input RDL specification')
     cmd_parser.add_argument('-i', '--ini', type=str, required=False, help='input configuration file (default: grogu.ini)', default="grogu.ini")
+    cmd_parser.add_argument('-p', '--prefix', type=str, required=False, help='naming prefix (default: input RDL basename)', default="")
     args = cmd_parser.parse_args()
 
     # Create INI parser and parse configuration file
@@ -106,5 +107,5 @@ if __name__ == "__main__":
         ini_parser['templates']['rtl_offset_template'],
         ini_parser['templates']['sw_offset_template'],
         ini_parser['templates']['sw_defines_template'],
-        ini_parser['design']['prefix']
+        args.prefix
     )
