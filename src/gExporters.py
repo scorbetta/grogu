@@ -4,6 +4,7 @@
 import os
 from typing import Union, Any, Type, Optional
 import sys
+import math
 
 # JINJA imports
 import jinja2 as jj
@@ -173,6 +174,7 @@ class gRTLExporter(RegblockExporter):
         package_template = kwargs.pop("package_template", None) # type: str
         target_language = kwargs.pop("target_language", None) # type: str
         prefix = kwargs.pop("prefix", None) # type: str
+        byte_addresses = kwargs.pop("byte_addresses", None) # type int
 
         # Construct exporter components
         self.cpuif = cpuif_cls(self)
@@ -184,6 +186,13 @@ class gRTLExporter(RegblockExporter):
 
         # Reuse list of registers in multipe places
         all_regs = list(node.top.registers())
+
+        # Address width depends on the standard: Byte-addressable or word-addressable
+        if byte_addresses == 1:
+            log2_x = len(all_regs) * all_regs[0].size * 8
+        else:
+            log2_x = len(all_regs)
+        addr_width = int(math.ceil(math.log2(log2_x)))
 
         # Build Jinja template context
         context = {
@@ -197,8 +206,7 @@ class gRTLExporter(RegblockExporter):
             # Take register width from first register since most of the cases all registers have the
             # same width...
             "data_width": all_regs[0].size * 8,
-            # By default, let the synthesized trim what's not necessary
-            "addr_width": 32,
+            "addr_width": addr_width,
             "prefix": prefix.upper()
         }
 
@@ -220,18 +228,27 @@ class gRTLExporter(RegblockExporter):
         stream.dump(module_file_path)
 
 # Utility to export RTL defines
-def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_language, prefix):
+def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_language, prefix, byte_addresses):
     jinja_env = Environment(loader=FileSystemLoader(tfolder))
     jinja_env.add_extension('jinja2.ext.loopcontrols')
     template = jinja_env.get_template(template)
 
     # Save list of registers, so that can re-iterate over them multiple times
     all_regs = list(root.top.registers())
+
+    # Address width depends on the standard: Byte-addressable or word-addressable
+    if byte_addresses == 1:
+        log2_x = len(all_regs) * all_regs[0].size * 8
+    else:
+        log2_x = len(all_regs)
+    addr_width = int(math.ceil(math.log2(log2_x)))
+
     context = {
         "regs": all_regs,
         "module_name": basename.upper(),
         "template_file": template.name,
-        "prefix": prefix.upper()
+        "prefix": prefix.upper(),
+        "addr_width": addr_width
     }
 
     extension = ""

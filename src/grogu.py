@@ -19,7 +19,7 @@ from peakrdl_html import HTMLExporter
 # grogu imports
 from gExporters import *
 
-def main(rdl_file, target_language, tfolder, module_template, package_template, rtl_offset_template, sw_offset_template, sw_defines_template, prefix):
+def main(rdl_file, target_language, tfolder, module_template, package_template, rtl_offset_template, sw_offset_template, sw_defines_template, prefix, byte_addresses):
     # Create RDL compiler
     rdlc = RDLCompiler()
     
@@ -56,10 +56,10 @@ def main(rdl_file, target_language, tfolder, module_template, package_template, 
     # Generate output products 1: Export RTL
     os.mkdir(f'{ofolder}/rtl')
     groguXrtl = gRTLExporter(tfolder)
-    groguXrtl.export(root, f'{ofolder}/rtl', cpuif_cls=gAXI4LiteInterface, module_template=module_template, package_template=package_template, module_name=module_name, package_name=rtl_package_name, target_language=target_language, prefix=prefix)
+    groguXrtl.export(root, f'{ofolder}/rtl', cpuif_cls=gAXI4LiteInterface, module_template=module_template, package_template=package_template, module_name=module_name, package_name=rtl_package_name, target_language=target_language, prefix=prefix, byte_addresses=byte_addresses)
 
     # Generate output products 2: Export SystemVerilog headers
-    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, tfolder, rtl_offset_template, target_language, prefix)
+    gRTLHeaderExporter(root, f'{ofolder}/rtl', module_name, tfolder, rtl_offset_template, target_language, prefix, byte_addresses)
 
     # Generate output products 3: Export Software files
     os.mkdir(f'{ofolder}/sw')
@@ -107,5 +107,6 @@ if __name__ == "__main__":
         ini_parser['templates']['rtl_offset_template'],
         ini_parser['templates']['sw_offset_template'],
         ini_parser['templates']['sw_defines_template'],
-        args.prefix
+        args.prefix,
+        ini_parser['templates']['byte_addresses']
     )

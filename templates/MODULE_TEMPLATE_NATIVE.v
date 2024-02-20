@@ -40,6 +40,7 @@ module {{module_name}} (
 
     reg rvalid;
     reg [{{data_width-1}}:0] rdata;
+    reg wack;
 
     // Instantiate registers and declare their own signals. From a Software perspective, i.e. access
     // via the AXI4 Lite interface, Configuration registers are Write-only while Status and Delta
@@ -109,6 +110,7 @@ module {{module_name}} (
 {%- endfor %}
     // Write decoder
     always @(posedge CLK) begin
+        wack <= 1'b0;
 {%- for reg in regs %}
     {%- for reg_inst in reg.unrolled() %}
         {%- if reg_inst.has_sw_writable %}
@@ -122,6 +124,8 @@ module {{module_name}} (
 {%- endfor %}
 
         if(WREQ) begin
+            wack <= 1'b1;
+
             case(WADDR)
 {%- for reg in regs %}
     {%- for reg_inst in reg.unrolled() %}
@@ -164,6 +168,7 @@ module {{module_name}} (
     // Pinout
     assign RVALID   = rvalid;
     assign RDATA    = rdata;
+    assign WACK     = wack;
 
     // Compose and decompose CSR bundle data. Control registers (those written by the Software and
     // read by the Hardware) are put over the  HWIF_OUT_*  ports; Status registers (those written by
