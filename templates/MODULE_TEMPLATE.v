@@ -181,9 +181,9 @@ module {{module_name}} (
     {%- for reg_inst in reg.unrolled() %}
         {%- if reg_inst.has_sw_writable %}
             {%- if reg.is_array %}
-            `{{reg_inst.inst_name}}_{{reg_inst.current_idx[0]}}_OFFSET : begin {{reg_inst.inst_name.lower()}}_{{reg_inst.current_idx[0]}}_wreq <= 1'b1; end
+            `{{prefix}}{{reg_inst.inst_name}}_{{reg_inst.current_idx[0]}}_OFFSET : begin {{reg_inst.inst_name.lower()}}_{{reg_inst.current_idx[0]}}_wreq <= 1'b1; end
             {%- else %}
-            `{{reg_inst.inst_name}}_OFFSET : begin {{reg_inst.inst_name.lower()}}_wreq <= 1'b1; end
+            `{{prefix}}{{reg_inst.inst_name}}_OFFSET : begin {{reg_inst.inst_name.lower()}}_wreq <= 1'b1; end
             {%- endif %}
         {%- endif %}
     {%- endfor %}
@@ -221,9 +221,9 @@ module {{module_name}} (
     {%- for reg_inst in reg.unrolled() %}
         {%- if reg.has_sw_readable %}
             {%- if reg.is_array %}
-            `{{reg_inst.inst_name}}_{{reg_inst.current_idx[0]}}_OFFSET : begin regpool_rdata <= {{reg_inst.inst_name.lower()}}_{{reg_inst.current_idx[0]}}_value_out; end
+            `{{prefix}}{{reg_inst.inst_name}}_{{reg_inst.current_idx[0]}}_OFFSET : begin regpool_rdata <= {{reg_inst.inst_name.lower()}}_{{reg_inst.current_idx[0]}}_value_out; end
             {%- else %}
-            `{{reg_inst.inst_name}}_OFFSET : begin regpool_rdata <= {{reg_inst.inst_name.lower()}}_value_out; end
+            `{{prefix}}{{reg_inst.inst_name}}_OFFSET : begin regpool_rdata <= {{reg_inst.inst_name.lower()}}_value_out; end
             {%- endif %}
         {%- endif %}
     {%- endfor %}
