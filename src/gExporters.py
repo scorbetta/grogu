@@ -174,7 +174,7 @@ class gRTLExporter(RegblockExporter):
         package_template = kwargs.pop("package_template", None) # type: str
         target_language = kwargs.pop("target_language", None) # type: str
         prefix = kwargs.pop("prefix", None) # type: str
-        byte_addresses = kwargs.pop("byte_addresses", None) # type int
+        byte_addresses = kwargs.pop("byte_addresses", None) # type str
 
         # Construct exporter components
         self.cpuif = cpuif_cls(self)
@@ -188,8 +188,8 @@ class gRTLExporter(RegblockExporter):
         all_regs = list(node.top.registers())
 
         # Address width depends on the standard: Byte-addressable or word-addressable
-        if byte_addresses == 1:
-            log2_x = len(all_regs) * all_regs[0].size * 8
+        if int(byte_addresses) == 1:
+            log2_x = len(all_regs) * all_regs[0].size
         else:
             log2_x = len(all_regs)
         addr_width = int(math.ceil(math.log2(log2_x)))
@@ -237,8 +237,8 @@ def gRTLHeaderExporter(root, ofolder, basename, tfolder, template, target_langua
     all_regs = list(root.top.registers())
 
     # Address width depends on the standard: Byte-addressable or word-addressable
-    if byte_addresses == 1:
-        log2_x = len(all_regs) * all_regs[0].size * 8
+    if int(byte_addresses) == 1:
+        log2_x = len(all_regs) * all_regs[0].size
     else:
         log2_x = len(all_regs)
     addr_width = int(math.ceil(math.log2(log2_x)))
