@@ -55,6 +55,7 @@ module {{module_name}} (
     reg regpool_rvalid;
     wire regpool_wen;
     reg regpool_wen_resampled;
+    wire regpool_wack;
     wire [{{addr_width-1}}:0] regpool_waddr;
     wire [{{data_width-1}}:0] regpool_wdata;
 
@@ -88,7 +89,7 @@ module {{module_name}} (
         .WEN            (regpool_wen),
         .WADDR          (regpool_waddr),
         .WDATA          (regpool_wdata),
-        .WACK           (), // Unused
+        .WACK           (regpool_wack),
         .REN            (regpool_ren),
         .RADDR          (regpool_raddr),
         .RDATA          (regpool_rdata),
@@ -195,6 +196,9 @@ module {{module_name}} (
     always @(posedge ACLK) begin
         regpool_wen_resampled <= regpool_wen;
     end
+
+    // Ack as soon as possible
+    assign regpool_wack = regpool_wen_resampled;
 
     // Filter Write enables
 {%- for reg in regs %}
